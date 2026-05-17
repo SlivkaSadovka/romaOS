@@ -10,6 +10,7 @@ typedef enum {
 
 typedef struct {
   int prio; // приоритет
+  task_state_t state;
   void (*entry)(void); // указатель на функцию
 } task_t;
 
