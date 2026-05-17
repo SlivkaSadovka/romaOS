@@ -1,17 +1,14 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include "task.h"
-#include "scheduler.h"
+#include "romaos.h"
 
-#define __noreturn __attribute__((noreturn))
-
-__noreturn void os_start(task_t *task) {
-  printf("Starting romaOS...\n");
-
-  scheduler_init();
-  scheduler_add(task);
-  scheduler_start();
-
-  printf("Task finished, shutting down OS...\n");
-  exit(0);
+/**
+ * Главная функция запуска ОС.
+ * Инициализирует порт (прерывания), планировщик,
+ * добавляет стартовую задачу и запускает планировщик.
+ * Никогда не возвращается.
+ */
+__attribute__((noreturn)) void start_os(task_t *task) {
+    port_init();
+    scheduler_init();
+    scheduler_add(task);
+    scheduler_start();
 }

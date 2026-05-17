@@ -4,13 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 #define IRQ_COUNT 10
 
 static isr_t handlers[IRQ_COUNT];
 static sigset_t irq_masks[IRQ_COUNT];
 
-// flags
 volatile int in_isr = 0;
 volatile int return_to_isr = 0;
 
@@ -48,8 +46,8 @@ void port_enter_isr(int irq, ucontext_t *ctx) {
     if (!in_isr) {
         task_t *cur = scheduler_current();
         if (cur) {
-            cur->ctx = *ctx;                // сохраняем контекст
-            scheduler_mark_ready(cur);     // возвращаем задачу в очередь готовых
+            cur->ctx = *ctx;
+            scheduler_mark_ready(cur);
         }
     } else {
         return_to_isr = 1;
@@ -67,5 +65,4 @@ void port_leave_isr(void) {
 void port_init(void) {
     in_isr = 0;
     return_to_isr = 0;
-    memset(handlers, 0, sizeof(handlers));
 }
