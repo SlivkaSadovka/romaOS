@@ -1,56 +1,51 @@
+#include "romaos.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include "../src/task.h"
-#include "../src/scheduler.h"
-#include "../src/resource.h"
-#include "../src/port.h"
+#include <stdlib.h>   // для exit
 
-// Явно задаём макросы для входа/выхода из прерывания,
-// потому что не включаем romaos.h (чтобы избежать лишних зависимостей)
-#define ENTER_ISR()   port_enter_isr(current_irq, current_ucontext)
-#define LEAVE_ISR()   port_leave_isr()
+RESOURCE(res, 3);
 
-resource_t res;
+int test_success = 0;
 
-task_t high_task, low_task;
-
-void high_func(void) {
+// Объявляем high_task до low_task, чтобы low_task могла её активировать
+TASK(high_task, 5) {
     printf("High tries to get resource\n");
-    resource_get(&res);
+    GetResource(res);
     printf("High got resource, releasing\n");
-    resource_release(&res);
+    ReleaseResource(res);
     printf("High finished\n");
-    terminate_task();
+    if (test_success == 1) {
+        ShutdownOS();          // всё прошло успешно
+    } else {
+        exit(1);               // что-то пошло не так
+    }
 }
 
-void low_func(void) {
+TASK(low_task, 10) {
     printf("Low getting resource\n");
-    resource_get(&res);
+    GetResource(res);
     printf("Low got resource. Activating High via ISR.\n");
     raise(SIGRTMIN+0);
     printf("Low releasing resource\n");
-    resource_release(&res);
+    ReleaseResource(res);
+    test_success = 1;
     printf("Low finished\n");
-    terminate_task();
+    TerminateTask();
 }
 
-void isr_handler(int sig, siginfo_t *info, void *ctx) {
+ISR(irq0, 0) {
     ENTER_ISR();
     printf("ISR: activating High\n");
-    activate_task(&high_task);
+    ISRActivateTask(high_task);
     LEAVE_ISR();
 }
 
-int main(void) {
-    task_init(&high_task, 5, high_func);
-    task_init(&low_task, 10, low_func);
-    resource_init(&res, 3);  // потолок = 3
+// Диспетчер, который запускает low_task и завершается
+TASK(dispatcher, 0) {
+    ActivateTask(low_task);
+    TerminateTask();
+}
 
-    port_init();
-    port_irq_register(0, isr_handler);
-    scheduler_init();
-    scheduler_add(&low_task);
-    scheduler_start();
+int main(void) {
+    StartOS(dispatcher);
     return 0;
 }

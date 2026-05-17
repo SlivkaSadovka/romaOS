@@ -1,19 +1,12 @@
+#include "../include/romaos.h"
 #include <stdio.h>
-#include "task.h"
-#include "scheduler.h"
 
-void hello_task(void) {
+TASK(hello, 0) {
     printf("Hello, RomaOS!\n");
-    terminate_task();
+    TerminateTask();
 }
 
 int main(void) {
-    task_t hello;
-    task_init(&hello, 0, hello_task);
-
-    scheduler_init();
-    scheduler_add(&hello);
-    scheduler_start();
-
+    StartOS(hello);
     return 0;
 }

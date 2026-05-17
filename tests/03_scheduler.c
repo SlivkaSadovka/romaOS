@@ -1,30 +1,33 @@
-#include <stdio.h>
+#include "romaos.h"
 #include <stdlib.h>
-#include "scheduler.h"
-#include "task.h"
+#include <stdio.h>
 
-task_t t1, t2;
+int w1_done = 0, w2_done = 0;
 
-void f1(void) {
-    printf("Task1\n");
+TASK(worker1, 1) {
+    w1_done = 1;
+    printf("Task 1 working...\n");
     yield();
-    printf("Task1 done\n");
-    terminate_task();
+    if (!w2_done) exit(1);
+    printf("Task 1 done.\n");
+    TerminateTask();
 }
 
-void f2(void) {
-    printf("Task2\n");
+TASK(worker2, 2) {
+    w2_done = 1;
+    printf("Task 2 working...\n");
     yield();
-    printf("Task2 done\n");
-    terminate_task();
+    printf("Task 2 done.\n");
+    TerminateTask();
+}
+
+TASK(task_dispatcher, 0) {
+    ActivateTask(worker1);
+    ActivateTask(worker2);
+    TerminateTask();
 }
 
 int main(void) {
-    task_init(&t1, 0, f1);
-    task_init(&t2, 1, f2);
-    scheduler_init();
-    scheduler_add(&t1);
-    scheduler_add(&t2);
-    scheduler_start();
+    StartOS(task_dispatcher);
     return 0;
 }
