@@ -1,6 +1,10 @@
 #ifndef TASK_H
 #define TASK_H
 
+#include <ucontext.h>
+
+#define STACK_SIZE 4096
+
 typedef enum {
   TASK_SUSPENDED = 0,
   TASK_READY,
@@ -9,9 +13,12 @@ typedef enum {
 } task_state_t;
 
 typedef struct {
-  int prio; // приоритет
+  int prio;
   task_state_t state;
-  void (*entry)(void); // указатель на функцию
+  void (*entry)(void);
+
+  ucontext_t ctx;
+  unsigned char stack[STACK_SIZE];
 } task_t;
 
 #endif
