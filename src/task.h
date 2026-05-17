@@ -21,6 +21,7 @@ typedef struct {
   unsigned char stack[STACK_SIZE];
   task_state_t state;
   list_node_t sched_node;
+  list_t resources; 
 } task_t;
 
 static inline void task_init(task_t *task, int prio, void (*entry)(void)) {
@@ -30,6 +31,7 @@ static inline void task_init(task_t *task, int prio, void (*entry)(void)) {
     task->state = TASK_SUSPENDED;
     task->sched_node.next = NULL;
     task->sched_node.prev = NULL;
+    list_init(&task->resources);
 }
 
 #endif
