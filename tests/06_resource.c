@@ -1,12 +1,11 @@
 #include "romaos.h"
 #include <stdio.h>
-#include <stdlib.h>   // для exit
+#include <stdlib.h>
 
 RESOURCE(res, 3);
 
 int test_success = 0;
 
-// Объявляем high_task до low_task, чтобы low_task могла её активировать
 TASK(high_task, 5) {
     printf("High tries to get resource\n");
     GetResource(res);
@@ -14,9 +13,9 @@ TASK(high_task, 5) {
     ReleaseResource(res);
     printf("High finished\n");
     if (test_success == 1) {
-        ShutdownOS();          // всё прошло успешно
+        ShutdownOS();
     } else {
-        exit(1);               // что-то пошло не так
+        exit(1);
     }
 }
 
@@ -39,7 +38,6 @@ ISR(irq0, 0) {
     LEAVE_ISR();
 }
 
-// Диспетчер, который запускает low_task и завершается
 TASK(dispatcher, 0) {
     ActivateTask(low_task);
     TerminateTask();

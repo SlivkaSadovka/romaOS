@@ -1,10 +1,9 @@
 #include "romaos.h"
 #include <stdio.h>
-#include <stdlib.h>   // для exit
+#include <stdlib.h>
 
 int a_ok = 0, b_ok = 0;
 
-// ---------- рабочие задачи ----------
 TASK(taskB, 2) {
     printf("Task B started.\n");
     for (int i = 0; i < 3; i++) {
@@ -27,7 +26,6 @@ TASK(taskA, 1) {
     TerminateTask();
 }
 
-// ---------- диспетчер ----------
 TASK(dispatcher, 0) {
     printf("Dispatcher: activating taskA and taskB.\n");
     ActivateTask(taskA);
@@ -36,10 +34,8 @@ TASK(dispatcher, 0) {
     TerminateTask();
 }
 
-// ---------- проверка ----------
 int main(void) {
     StartOS(dispatcher);
-    // если всё прошло правильно, обе задачи выполнились
     if (!a_ok || !b_ok) exit(1);
     return 0;
 }
