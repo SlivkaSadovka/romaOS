@@ -14,11 +14,10 @@ typedef enum {
 
 typedef struct {
   int prio;
-  task_state_t state;
   void (*entry)(void);
-
   ucontext_t ctx;
   unsigned char stack[STACK_SIZE];
+  task_state_t state;
 } task_t;
 
 #endif

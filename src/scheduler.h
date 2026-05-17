@@ -9,4 +9,6 @@ void scheduler_add(task_t *task);
 
 __attribute__((noreturn)) void scheduler_start(void);
 
+void yield(void);
+
 #endif
