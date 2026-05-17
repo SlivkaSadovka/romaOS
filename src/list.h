@@ -58,7 +58,6 @@ for (pos = (list)->next; pos != (list); pos = pos->next)
 
 #define list_entry(node, type, member) container_of(node, type, member)
 
-/* Статический инициализатор */
 #define LIST_INIT(list) { .next = (list), .prev = (list) }
 
 #endif
