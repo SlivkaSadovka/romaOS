@@ -1,1 +1,1 @@
-![CMake Build](https://github.com/SlivkaSadovka/romaos/actions/workflows/build.yml/badge.svg)
+![RomaOS](https://github.com/SlivkaSadovka/romaOS/blob/main/romaos.png)
